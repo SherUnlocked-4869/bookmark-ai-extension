@@ -11,5 +11,12 @@ export default defineConfig({
   plugins: [react(), crx({ manifest })],
   resolve: {
     alias: { '@': resolve(__dirname, 'src') }
+  },
+  build: {
+    rollupOptions: {
+      input: {
+        tab: resolve(__dirname, 'index.html'),
+      }
+    }
   }
 });

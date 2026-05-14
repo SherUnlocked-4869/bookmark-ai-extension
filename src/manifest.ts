@@ -7,6 +7,12 @@ export default defineManifest({
   description: '基于 AI 的 Chrome 书签智能分类扩展',
   permissions: ['bookmarks', 'storage'],
   action: { default_title: '书签智能分类' },
+  web_accessible_resources: [
+    {
+      resources: ['index.html'],
+      matches: ['<all_urls>'],
+    },
+  ],
   background: {
     service_worker: 'src/background/index.ts',
     type: 'module'
