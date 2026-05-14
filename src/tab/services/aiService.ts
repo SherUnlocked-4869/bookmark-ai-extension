@@ -110,9 +110,10 @@ export const aiService = {
     model: string,
     baseUrl: string,
     batchSize: number = 500
-  ): Promise<Record<string, string>> {
+  ): Promise<ClassificationResult> {
     const isFirst = categories.length === 0;
     const allAssignments: Record<string, string> = {};
+    let allCategories: string[] = [...categories];
 
     for (let i = 0; i < bookmarks.length; i += batchSize) {
       const batch = bookmarks.slice(i, i + batchSize);
@@ -120,14 +121,14 @@ export const aiService = {
         const result = await this.classifyFirst(batch, apiKey, model, baseUrl);
         Object.assign(allAssignments, result.assignments);
         if (result.categories.length > 0) {
-          categories = result.categories;
+          allCategories = result.categories;
         }
       } else {
-        const result = await this.classifySubsequent(batch, categories, apiKey, model, baseUrl);
+        const result = await this.classifySubsequent(batch, allCategories, apiKey, model, baseUrl);
         Object.assign(allAssignments, result.assignments);
       }
     }
 
-    return allAssignments;
+    return { categories: allCategories, assignments: allAssignments };
   },
 };
