@@ -27,8 +27,28 @@ function buildSubsequentPrompt(bookmarks: Bookmark[], categories: string[]): str
 }
 
 function extractJSON(text: string): string {
-  const match = text.match(/\{[\s\S]*\}/);
-  return match ? match[0] : text;
+  const cleaned = text
+    .replace(/```json\s*/gi, '')
+    .replace(/```\s*/g, '')
+    .trim();
+  const match = cleaned.match(/\{[\s\S]*\}/);
+  return match ? match[0] : cleaned;
+}
+
+function parseAIResponse<T>(content: string): T {
+  if (!content || content.trim().length === 0) {
+    throw new Error('AI 返回了空内容，请重试');
+  }
+  try {
+    const json = extractJSON(content);
+    return JSON.parse(json) as T;
+  } catch (e) {
+    if (e instanceof SyntaxError) {
+      const preview = content.length > 300 ? content.substring(0, 300) + '...' : content;
+      throw new Error(`AI 返回格式异常，响应可能被截断，请减少书签数量后重试。响应预览: ${preview}`);
+    }
+    throw e;
+  }
 }
 
 export const aiService = {
@@ -51,7 +71,7 @@ export const aiService = {
           { role: 'user', content: buildFirstPrompt(bookmarks) },
         ],
         temperature: 0.3,
-        max_tokens: 8192,
+        max_tokens: 16384,
       }),
     });
 
@@ -62,9 +82,8 @@ export const aiService = {
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content ?? '';
-    const json = extractJSON(content);
-    return JSON.parse(json) as ClassificationResult;
+    const content: string = data.choices?.[0]?.message?.content ?? '';
+    return parseAIResponse<ClassificationResult>(content);
   },
 
   async classifySubsequent(
@@ -87,7 +106,7 @@ export const aiService = {
           { role: 'user', content: buildSubsequentPrompt(bookmarks, categories) },
         ],
         temperature: 0.3,
-        max_tokens: 4096,
+        max_tokens: 16384,
       }),
     });
 
@@ -98,9 +117,8 @@ export const aiService = {
     }
 
     const data = await response.json();
-    const content = data.choices?.[0]?.message?.content ?? '';
-    const json = extractJSON(content);
-    return JSON.parse(json);
+    const content: string = data.choices?.[0]?.message?.content ?? '';
+    return parseAIResponse<{ assignments: Record<string, string> }>(content);
   },
 
   async classifyBatch(
@@ -109,7 +127,7 @@ export const aiService = {
     apiKey: string,
     model: string,
     baseUrl: string,
-    batchSize: number = 500
+    batchSize: number = 150
   ): Promise<ClassificationResult> {
     const isFirst = categories.length === 0;
     const allAssignments: Record<string, string> = {};
