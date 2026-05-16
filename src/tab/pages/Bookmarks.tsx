@@ -1,4 +1,4 @@
-import { Box, Chip, Stack, Snackbar, Alert, LinearProgress } from '@mui/material';
+import { Box, Chip, Stack, Snackbar, Alert, LinearProgress, Typography } from '@mui/material';
 import type { Settings } from '@/tab/types';
 import { useBookmarks } from '@/tab/hooks/useBookmarks';
 import { useCategories } from '@/tab/hooks/useCategories';
@@ -8,12 +8,11 @@ import EmptyState from '@/tab/components/EmptyState';
 
 interface Props {
   settings: Settings;
-  onNavigateSettings: () => void;
 }
 
-export default function BookmarksPage({ settings, onNavigateSettings }: Props) {
+export default function BookmarksPage({ settings }: Props) {
   const { bookmarks, syncing, lastSyncTime, sync } = useBookmarks();
-  const { categories, classifications, classifying, error, classify, setError } = useCategories();
+  const { categories, classifications, classifying, progress, error, classify, setError } = useCategories();
 
   const handleClassify = () => classify(bookmarks, settings);
 
@@ -31,15 +30,23 @@ export default function BookmarksPage({ settings, onNavigateSettings }: Props) {
       <TopBar
         onSync={sync}
         onClassify={handleClassify}
-        onSettings={onNavigateSettings}
         syncing={syncing}
         classifying={classifying}
       />
 
-      {classifying && <LinearProgress sx={{ height: 3 }} />}
+      {classifying && (
+        <Box sx={{ px: 2.5, pt: 1 }}>
+          <LinearProgress sx={{ height: 3 }} />
+          {progress && (
+            <Typography variant="caption" sx={{ display: 'block', mt: 0.5, color: 'text.secondary', textAlign: 'center' }}>
+              {progress}
+            </Typography>
+          )}
+        </Box>
+      )}
 
       {bookmarks.length > 0 && (
-        <Stack direction="row" spacing={1} sx={{ px: 3, py: 1.5, bgcolor: 'action.hover', flexWrap: 'wrap', gap: 0.5 }}>
+        <Stack direction="row" spacing={1} sx={{ px: 3, py: 1.5, flexWrap: 'wrap', gap: 0.5 }}>
           <Chip label={`${bookmarks.length} 个书签`} size="small" color="primary" variant="outlined" />
           <Chip label={`${categories.length} 个分类`} size="small" color="secondary" variant="outlined" />
           {unclassifiedCount > 0 && (
