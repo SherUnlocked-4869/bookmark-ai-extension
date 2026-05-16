@@ -1,11 +1,17 @@
-import { Box, Typography, Link } from '@mui/material';
+import { useState } from 'react';
+import { Box, Typography, Link, Select, MenuItem, Chip } from '@mui/material';
 import type { Bookmark } from '@/tab/types';
 
 interface Props {
   bookmark: Bookmark;
+  categories: string[];
+  currentCategory: string;
+  onReclassify: (bookmarkId: string, newCategory: string) => void;
 }
 
-export default function BookmarkItem({ bookmark }: Props) {
+export default function BookmarkItem({ bookmark, categories, currentCategory, onReclassify }: Props) {
+  const [editing, setEditing] = useState(false);
+
   return (
     <Box
       sx={{
@@ -46,6 +52,30 @@ export default function BookmarkItem({ bookmark }: Props) {
           {bookmark.url ? new URL(bookmark.url).hostname : ''}
         </Typography>
       </Box>
+      {editing ? (
+        <Select
+          size="small"
+          value={currentCategory}
+          onChange={(e) => {
+            onReclassify(bookmark.id, e.target.value);
+            setEditing(false);
+          }}
+          onClose={() => setEditing(false)}
+          autoFocus
+          sx={{ fontSize: 12, height: 28, minWidth: 100, ml: 1 }}
+        >
+          {categories.map((cat) => (
+            <MenuItem key={cat} value={cat} sx={{ fontSize: 13 }}>{cat}</MenuItem>
+          ))}
+        </Select>
+      ) : (
+        <Chip
+          label={currentCategory}
+          size="small"
+          onClick={() => setEditing(true)}
+          sx={{ ml: 1, fontSize: 11, height: 22, cursor: 'pointer', flexShrink: 0 }}
+        />
+      )}
     </Box>
   );
 }
