@@ -11,9 +11,12 @@ interface Props {
   name: string;
   bookmarks: Bookmark[];
   index: number;
+  categories: string[];
+  onReclassify: (bookmarkId: string, newCategory: string) => void;
+  classifications: Record<string, string>;
 }
 
-export default function CategoryPanel({ name, bookmarks, index }: Props) {
+export default function CategoryPanel({ name, bookmarks, index, categories: allCategories, onReclassify, classifications }: Props) {
   const [expanded, setExpanded] = useState(false);
   const accentColor = COLORS[index % COLORS.length];
   const preview = bookmarks.slice(0, 4);
@@ -33,13 +36,29 @@ export default function CategoryPanel({ name, bookmarks, index }: Props) {
           />
         </Box>
         <Box sx={{ px: 2 }}>
-          {preview.map((b) => <BookmarkItem key={b.id} bookmark={b} />)}
+          {preview.map((b) => (
+            <BookmarkItem
+              key={b.id}
+              bookmark={b}
+              categories={allCategories}
+              currentCategory={classifications[b.id]}
+              onReclassify={onReclassify}
+            />
+          ))}
         </Box>
         {remaining > 0 && (
           <>
             <Collapse in={expanded}>
               <Box sx={{ px: 2 }}>
-                {bookmarks.slice(4).map((b) => <BookmarkItem key={b.id} bookmark={b} />)}
+                {bookmarks.slice(4).map((b) => (
+                  <BookmarkItem
+                    key={b.id}
+                    bookmark={b}
+                    categories={allCategories}
+                    currentCategory={classifications[b.id]}
+                    onReclassify={onReclassify}
+                  />
+                ))}
               </Box>
             </Collapse>
             <Button
