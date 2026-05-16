@@ -2,14 +2,16 @@ import { useState, useMemo } from 'react';
 import { ThemeProvider, CssBaseline, useMediaQuery, Box, CircularProgress } from '@mui/material';
 import { lightTheme, darkTheme } from '@/tab/theme/theme';
 import { useSettings } from '@/tab/hooks/useSettings';
+import Layout from '@/tab/components/Layout';
 import BookmarksPage from '@/tab/pages/Bookmarks';
 import Settings from '@/tab/pages/Settings';
+import type { Page } from '@/tab/types';
 
 export default function App() {
   const prefersDark = useMediaQuery('(prefers-color-scheme: dark)');
   const theme = useMemo(() => (prefersDark ? darkTheme : lightTheme), [prefersDark]);
   const { settings, saveSettings, loaded } = useSettings();
-  const [page, setPage] = useState<'bookmarks' | 'settings'>('bookmarks');
+  const [page, setPage] = useState<Page>('bookmarks');
 
   if (!loaded) {
     return (
@@ -25,18 +27,26 @@ export default function App() {
   return (
     <ThemeProvider theme={theme}>
       <CssBaseline />
-      {page === 'settings' ? (
-        <Settings
-          settings={settings}
-          onSave={saveSettings}
-          onBack={() => setPage('bookmarks')}
-        />
-      ) : (
-        <BookmarksPage
-          settings={settings}
-          onNavigateSettings={() => setPage('settings')}
-        />
-      )}
+      <Layout currentPage={page} onNavigate={setPage}>
+        {page === 'bookmarks' && <BookmarksPage settings={settings} />}
+        {page === 'settings' && (
+          <Settings
+            settings={settings}
+            onSave={saveSettings}
+            onBack={() => setPage('bookmarks')}
+          />
+        )}
+        {page === 'dedup' && (
+          <Box sx={{ p: 3 }}>
+            <p>TODO: DedupPage</p>
+          </Box>
+        )}
+        {page === 'statistics' && (
+          <Box sx={{ p: 3 }}>
+            <p>TODO: StatisticsPage</p>
+          </Box>
+        )}
+      </Layout>
     </ThemeProvider>
   );
 }
