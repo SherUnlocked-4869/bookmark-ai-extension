@@ -6,6 +6,7 @@ import Layout from '@/tab/components/Layout';
 import BookmarksPage from '@/tab/pages/Bookmarks';
 import Settings from '@/tab/pages/Settings';
 import DedupPage from '@/tab/pages/DedupPage';
+import StatisticsPage from '@/tab/pages/StatisticsPage';
 import type { Page } from '@/tab/types';
 
 export default function App() {
@@ -38,11 +39,7 @@ export default function App() {
           />
         )}
         {page === 'dedup' && <DedupPage />}
-        {page === 'statistics' && (
-          <Box sx={{ p: 3 }}>
-            <p>TODO: StatisticsPage</p>
-          </Box>
-        )}
+        {page === 'statistics' && <StatisticsPage />}
       </Layout>
     </ThemeProvider>
   );
