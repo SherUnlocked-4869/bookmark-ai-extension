@@ -87,5 +87,5 @@ export function useCategories() {
     }
   }, []);
 
-  return { categories, classifications, classifying, progress, error, classify, setError, setClassifications };
+  return { categories, classifications, classifying, progress, error, classify, setError, setClassifications, setCategories };
 }

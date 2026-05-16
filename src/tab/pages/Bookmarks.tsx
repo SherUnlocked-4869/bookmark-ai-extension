@@ -15,7 +15,7 @@ interface Props {
 
 export default function BookmarksPage({ settings }: Props) {
   const { bookmarks, syncing, lastSyncTime, sync } = useBookmarks();
-  const { categories, classifications, classifying, progress, error, classify, setError, setClassifications } = useCategories();
+  const { categories, classifications, classifying, progress, error, classify, setError, setClassifications, setCategories } = useCategories();
 
   // Search
   const [searchQuery, setSearchQuery] = useState('');
@@ -62,6 +62,21 @@ export default function BookmarksPage({ settings }: Props) {
     const updated = { ...classifications, [bookmarkId]: newCategory };
     setClassifications(updated);
     await storageService.saveClassifications(updated);
+  };
+
+  // Rename category
+  const handleRenameCategory = async (oldName: string, newName: string) => {
+    if (oldName === newName) return;
+    const updatedCategories = categories.map((c) => (c === oldName ? newName : c));
+    setCategories(updatedCategories);
+    await storageService.saveCategories(updatedCategories);
+
+    const updatedClassifications: Record<string, string> = {};
+    for (const [id, cat] of Object.entries(classifications)) {
+      updatedClassifications[id] = cat === oldName ? newName : cat;
+    }
+    setClassifications(updatedClassifications);
+    await storageService.saveClassifications(updatedClassifications);
   };
 
   // Filtering
@@ -177,6 +192,7 @@ export default function BookmarksPage({ settings }: Props) {
                 categories={categories}
                 onReclassify={handleReclassify}
                 classifications={classifications}
+                onRenameCategory={handleRenameCategory}
               />
             ))}
           </Box>
