@@ -163,7 +163,7 @@ export function useDedup() {
       }
       const newReport: DedupReport = {
         duplicateGroups: groups.length,
-        duplicateCount: selectedIds.size,
+        duplicateCount: 0,
         deletedCount: selectedIds.size,
       };
       setReport(newReport);
