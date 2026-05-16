@@ -5,6 +5,7 @@ import { useSettings } from '@/tab/hooks/useSettings';
 import Layout from '@/tab/components/Layout';
 import BookmarksPage from '@/tab/pages/Bookmarks';
 import Settings from '@/tab/pages/Settings';
+import DedupPage from '@/tab/pages/DedupPage';
 import type { Page } from '@/tab/types';
 
 export default function App() {
@@ -36,11 +37,7 @@ export default function App() {
             onBack={() => setPage('bookmarks')}
           />
         )}
-        {page === 'dedup' && (
-          <Box sx={{ p: 3 }}>
-            <p>TODO: DedupPage</p>
-          </Box>
-        )}
+        {page === 'dedup' && <DedupPage />}
         {page === 'statistics' && (
           <Box sx={{ p: 3 }}>
             <p>TODO: StatisticsPage</p>
