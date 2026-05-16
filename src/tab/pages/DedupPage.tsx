@@ -1,13 +1,12 @@
 import { useState, useEffect } from 'react';
 import {
   Box, Typography, Button, Checkbox, Card, CardContent, Chip,
-  Alert, LinearProgress, Divider, Snackbar,
+  Alert, LinearProgress, Divider,
 } from '@mui/material';
 import DeleteIcon from '@mui/icons-material/Delete';
 import CleaningServicesIcon from '@mui/icons-material/CleaningServices';
 import type { Bookmark, DedupGroup } from '@/tab/types';
 import { useDedup } from '@/tab/hooks/useDedup';
-import { bookmarkService } from '@/tab/services/bookmarkService';
 import { storageService } from '@/tab/services/storageService';
 
 function GroupCard({ group, selectedIds, onToggle }: {
