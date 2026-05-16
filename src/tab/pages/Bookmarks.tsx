@@ -65,6 +65,10 @@ export default function BookmarksPage({ settings }: Props) {
   };
 
   // Filtering
+  const ADULT_PATTERNS = ['成人'];
+  const autoHidden = categories.filter((cat) => ADULT_PATTERNS.some((p) => cat.includes(p)));
+  const effectiveHidden = [...new Set([...hiddenCategories, ...autoHidden])];
+
   const filteredBookmarks = searchQuery
     ? bookmarks.filter(
         (b) =>
@@ -74,7 +78,7 @@ export default function BookmarksPage({ settings }: Props) {
     : bookmarks;
 
   const grouped = categories
-    .filter((cat) => showAdult || !hiddenCategories.includes(cat))
+    .filter((cat) => showAdult || !effectiveHidden.includes(cat))
     .map((cat) => ({
       name: cat,
       bookmarks: filteredBookmarks.filter((b) => classifications[b.id] === cat),
