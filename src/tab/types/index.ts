@@ -33,3 +33,18 @@ export const PROVIDER_CONFIGS: Record<Provider, { baseUrl: string; defaultModel:
   claude: { baseUrl: 'https://api.anthropic.com/v1', defaultModel: 'claude-sonnet-4-6' },
   custom: { baseUrl: '', defaultModel: '' },
 };
+
+export interface DedupGroup {
+  type: 'exact' | 'similar';
+  bookmarks: Bookmark[];
+  keepIndex: number;
+  category?: string;
+}
+
+export interface DedupReport {
+  duplicateGroups: number;
+  duplicateCount: number;
+  deletedCount: number;
+}
+
+export type Page = 'bookmarks' | 'dedup' | 'statistics' | 'settings';

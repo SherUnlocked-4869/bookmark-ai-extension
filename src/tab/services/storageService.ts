@@ -1,4 +1,4 @@
-import type { Settings, Bookmark } from '@/tab/types';
+import type { Settings, Bookmark, DedupReport } from '@/tab/types';
 import { DEFAULT_SETTINGS } from '@/tab/types';
 
 const KEYS = {
@@ -7,6 +7,8 @@ const KEYS = {
   classifications: 'classifications',
   lastSyncTime: 'lastSyncTime',
   bookmarksSnapshot: 'bookmarksSnapshot',
+  dedupReport: 'dedupReport',
+  hiddenCategories: 'hiddenCategories',
 } as const;
 
 export const storageService = {
@@ -53,5 +55,23 @@ export const storageService = {
 
   async saveBookmarksSnapshot(bookmarks: Bookmark[]): Promise<void> {
     await chrome.storage.local.set({ [KEYS.bookmarksSnapshot]: bookmarks });
+  },
+
+  async getDedupReport(): Promise<DedupReport | null> {
+    const result = await chrome.storage.local.get(KEYS.dedupReport);
+    return result[KEYS.dedupReport] ?? null;
+  },
+
+  async saveDedupReport(report: DedupReport): Promise<void> {
+    await chrome.storage.local.set({ [KEYS.dedupReport]: report });
+  },
+
+  async getHiddenCategories(): Promise<string[]> {
+    const result = await chrome.storage.local.get(KEYS.hiddenCategories);
+    return result[KEYS.hiddenCategories] ?? [];
+  },
+
+  async saveHiddenCategories(categories: string[]): Promise<void> {
+    await chrome.storage.local.set({ [KEYS.hiddenCategories]: categories });
   },
 };

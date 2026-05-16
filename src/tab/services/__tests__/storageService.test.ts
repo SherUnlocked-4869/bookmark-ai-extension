@@ -1,4 +1,5 @@
 import { describe, it, expect, beforeEach, vi } from 'vitest';
+import type { DedupReport } from '@/tab/types';
 
 const mockStorage: Record<string, unknown> = {};
 
@@ -63,5 +64,28 @@ describe('storageService', () => {
     await storageService.saveClassifications({ '1': '开发', '2': '设计' });
     const cls = await storageService.getClassifications();
     expect(cls).toEqual({ '1': '开发', '2': '设计' });
+  });
+
+  it('getDedupReport returns null by default', async () => {
+    const report = await storageService.getDedupReport();
+    expect(report).toBeNull();
+  });
+
+  it('saveDedupReport + getDedupReport roundtrip', async () => {
+    const report: DedupReport = { duplicateGroups: 3, duplicateCount: 8, deletedCount: 0 };
+    await storageService.saveDedupReport(report);
+    const loaded = await storageService.getDedupReport();
+    expect(loaded).toEqual(report);
+  });
+
+  it('getHiddenCategories returns empty array by default', async () => {
+    const cats = await storageService.getHiddenCategories();
+    expect(cats).toEqual([]);
+  });
+
+  it('saveHiddenCategories + getHiddenCategories roundtrip', async () => {
+    await storageService.saveHiddenCategories(['成人']);
+    const cats = await storageService.getHiddenCategories();
+    expect(cats).toEqual(['成人']);
   });
 });
