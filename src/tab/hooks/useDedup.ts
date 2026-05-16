@@ -161,13 +161,13 @@ export function useDedup() {
       for (const id of ids) {
         await chrome.bookmarks.remove(id);
       }
-      const report: DedupReport = {
+      const newReport: DedupReport = {
         duplicateGroups: groups.length,
         duplicateCount: selectedIds.size,
         deletedCount: selectedIds.size,
       };
-      setReport(report);
-      await storageService.saveDedupReport(report);
+      setReport(newReport);
+      await storageService.saveDedupReport(newReport);
       setGroups([]);
       setSelectedIds(new Set());
     } finally {
